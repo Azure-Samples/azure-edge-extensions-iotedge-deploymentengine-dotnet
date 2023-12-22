@@ -1,0 +1,109 @@
+{
+    "id": "automatic2",
+    "schemaVersion": null,
+    "labels": {},
+    "content": {
+        "modulesContent": {
+            "$edgeAgent": {
+                "properties.desired": {
+                    "schemaVersion": "1.1",
+                    "runtime": {
+                        "type": "docker",
+                        "settings": {
+                            "registryCredentials": {
+                                "blub": {
+                                    "address": "{{address}}",
+                                    "password": "test",
+                                    "username": "test"
+                                }
+                            }
+                        }
+                    },
+                    "systemModules": {
+                        "edgeAgent": {
+                            "imagePullPolicy": "on-create",
+                            "settings": {
+                                "image": "mcr.microsoft.com/azureiotedge-agent:1.4"
+                            },
+                            "type": "docker"
+                        },
+                        "edgeHub": {
+                            "imagePullPolicy": "on-create",
+                            "restartPolicy": "always",
+                            "settings": {
+                                "image": "mcr.microsoft.com/azureiotedge-hub:1.4",
+                                "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
+                            },
+                            "status": "running",
+                            "type": "docker"
+                        }
+                    },
+                    "modules": {
+                        "IoTEdgeMetricsCollector": {
+                            "env": {
+                                "ResourceId": {
+                                    "value": "<IoT Hub ARM resource ID - **Required** - See https://aka.ms/edgemon-config for details>"
+                                },
+                                "UploadTarget": {
+                                    "value": "<AzureMonitor or IoTMessage - See https://aka.ms/edgemon-config for details>"
+                                },
+                                "LogAnalyticsWorkspaceId": {
+                                    "value": "<Not needed if UploadTarget is 'IoTMessage'. See https://aka.ms/edgemon-config for details>"
+                                },
+                                "LogAnalyticsSharedKey": {
+                                    "value": "<Not needed if UploadTarget is 'IoTMessage'. See https://aka.ms/edgemon-config for details>"
+                                },
+                                "OtherConfig": {
+                                    "value": "<See https://aka.ms/edgemon-config for details>"
+                                }
+                            },
+                            "restartPolicy": "always",
+                            "settings": {
+                                "image": "mcr.microsoft.com/azureiotedge-metrics-collector:1.0"
+                            },
+                            "status": "running",
+                            "type": "docker"
+                        }
+                    }
+                }
+            },
+            "$edgeHub": {
+                "properties.desired": {
+                    "schemaVersion": "1.1",
+                    "storeAndForwardConfiguration": {
+                        "timeToLiveSecs": 7200
+                    },
+                    "routes": {
+                        "FromMetricsCollectorToUpstream": {
+                            "route": "FROM /messages/modules/IoTEdgeMetricsCollector/* INTO $upstream"
+                        }
+                    }
+                }
+            },
+            "IoTEdgeMetricsCollector": {}
+        }
+    },
+    "targetCondition": "tags.env='device200' or tags.iiot=true",
+    "createdTimeUtc": "2022-12-13T12:17:29.8068798Z",
+    "lastUpdatedTimeUtc": "2022-12-13T12:17:29.8068798Z",
+    "priority": 2,
+    "systemMetrics": {
+        "results": {
+            "targetedCount": 0,
+            "appliedCount": 0,
+            "reportedSuccessfulCount": 0,
+            "reportedFailedCount": 0
+        },
+        "queries": {
+            "targetedCount": "select deviceId from devices where capabilities.iotEdge = true and tags.env='device100' or tags.env='device200'",
+            "appliedCount": "select deviceId from devices.modules where moduleId = '$edgeAgent' and configurations.[[automatic2]].status = 'Applied'",
+            "reportedSuccessfulCount": "select deviceId from devices.modules where moduleId = '$edgeAgent' and configurations.[[automatic2]].status = 'Applied' and properties.desired.$version = properties.reported.lastDesiredVersion and properties.reported.lastDesiredStatus.code = 200",
+            "reportedFailedCount": "select deviceId from devices.modules where moduleId = '$edgeAgent' and configurations.[[automatic2]].status = 'Applied' and properties.desired.$version = properties.reported.lastDesiredVersion and properties.reported.lastDesiredStatus.code != 200"
+        }
+    },
+    "metrics": {
+        "results": {},
+        "queries": {}
+    },
+    "etag": "MQ=="
+}

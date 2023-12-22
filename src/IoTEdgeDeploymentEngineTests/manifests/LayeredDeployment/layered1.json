@@ -1,0 +1,72 @@
+{
+    "id": "layered1",
+    "schemaVersion": null,
+    "labels": {},
+    "content": {
+        "modulesContent": {
+            "$edgeAgent": {
+                "properties.desired.modules.SQLite": {
+                    "env": {},
+                    "restartPolicy": "always",
+                    "settings": {
+                        "image": "mcr.microsoft.com/azureiotedge/sqlite:1.0"
+                    },
+                    "status": "running",
+                    "type": "docker"
+                }
+            },
+            "SQLite": {
+                "properties.desired": {
+                    "SQLiteConfigs": {
+                        "Db01": {
+                            "DbPath": "/app/db/test.db",
+                            "Table01": {
+                                "TableName": "test",
+                                "Column01": {
+                                    "ColumnName": "Id",
+                                    "Type": "numeric",
+                                    "IsKey": "true",
+                                    "NotNull": "true"
+                                },
+                                "Column02": {
+                                    "ColumnName": "Value",
+                                    "Type": "numeric",
+                                    "IsKey": "false",
+                                    "NotNull": "true"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "$edgeHub": {
+                "properties.desired.routes.sqliteToIoTHub": {
+                    "route": "FROM /messages/modules/SQLite/outputs/sqliteOutput INTO $upstream"
+                }
+            }
+        }
+    },
+    "targetCondition": "tags.env='device100' or tags.env='device200'",
+    "createdTimeUtc": "2022-12-13T12:15:59.8887327Z",
+    "lastUpdatedTimeUtc": "2022-12-13T12:15:59.8887327Z",
+    "priority": 1,
+    "systemMetrics": {
+        "results": {
+            "targetedCount": 0,
+            "appliedCount": 0,
+            "reportedSuccessfulCount": 0,
+            "reportedFailedCount": 0
+        },
+        "queries": {
+            "targetedCount": "select deviceId from devices where capabilities.iotEdge = true and tags.env='device100' or tags.env='device200'",
+            "appliedCount": "select deviceId from devices.modules where moduleId = '$edgeAgent' and configurations.[[layered1]].status = 'Applied'",
+            "reportedSuccessfulCount": "select deviceId from devices.modules where moduleId = '$edgeAgent' and configurations.[[layered1]].status = 'Applied' and properties.desired.$version = properties.reported.lastDesiredVersion and properties.reported.lastDesiredStatus.code = 200",
+            "reportedFailedCount": "select deviceId from devices.modules where moduleId = '$edgeAgent' and configurations.[[layered1]].status = 'Applied' and properties.desired.$version = properties.reported.lastDesiredVersion and properties.reported.lastDesiredStatus.code != 200"
+        }
+    },
+    "metrics": {
+        "results": {},
+        "queries": {}
+    },
+    "etag": "MQ=="
+}

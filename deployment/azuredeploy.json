@@ -1,0 +1,336 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceName": {
+            "type": "string",
+            "maxLength": 20,
+            "metadata": {
+                "description": "Name of the Azure resources"
+            }
+        },
+        "tenantId": {
+            "type": "string",
+            "metadata": {
+                "description": "Id of the AAD Tenant"
+            }
+        },
+        "appId": {
+            "type": "string",
+            "metadata": {
+                "description": "Id of the App Registration"
+            }
+        },
+        "manifestsRootFolder": {
+            "type": "string",
+            "defaultValue": "D:\\home\\site\\manifests",
+            "metadata": {
+                "description": "Root folder on disk where the manifests are stored in the Azure Function hosting"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "iotHubName": "[concat('iot-', parameters('resourceName'))]",
+        "iotHubHostName": "[concat(variables('iotHubName'), '.azure-devices.net')]",
+        "keyVaultName": "[concat('kv-', parameters('resourceName'))]",
+        "keyVaultUri": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
+        "storageAccountName": "[concat('st', toLower(parameters('resourceName')))]",
+        "appInsightsName": "[concat('appi-', parameters('resourceName'))]",
+        "azureFuncName": "[concat('func-', parameters('resourceName'))]",
+        "hostingPlanName": "[concat('asp-', parameters('resourceName'))]",
+        "storageAccountId": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('StorageAccountName'))]",
+        "IoTHubDataContributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4fc6c259-987e-4a07-842e-c321cc9d413f')]",
+        "IoTHubRegistryContributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4ea46cd5-c1b2-4a8e-910b-273211f9ce47')]",
+        "IoTHubTwinContributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '494bdba2-168f-4f31-a0a1-191d2f7c028c')]",
+        "KeyVaultSecretsUser": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4633458b-17de-408a-b874-0445c86b69e6')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('storageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-08-01",
+            "location": "[resourceGroup().location]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "properties": {
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "name": "[variables('appInsightsName')]",
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02",
+            "location": "[resourceGroup().location]",
+            "kind": "web",
+            "tags": {
+                "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', variables('azureFuncName'))]": "Resource",
+                "displayName": "AppInsightsComponent"
+            },
+            "properties": {
+                "applicationId": "[variables('azureFuncName')]",
+                "application_Type": "web"
+            }
+        },
+        {
+            "name": "[concat(variables('appInsightsName'),'/Basic')]",
+            "type": "microsoft.insights/components/CurrentBillingFeatures",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-05-01",
+            "dependsOn": [
+                "[resourceId('microsoft.insights/components/', variables('appInsightsName'))]"
+            ],
+            "properties": {
+                "CurrentBillingFeatures": "Basic",
+                "DataVolumeCap": {
+                    "Cap": 20,
+                    "WarningThreshold": 90,
+                    "ResetTime": 23
+                }
+            }
+        },
+        {
+            "apiVersion": "2021-03-01",
+            "name": "[variables('hostingPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic"
+            },
+            "properties": {}
+        },
+        {
+            "name": "[variables('azureFuncName')]",
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2020-12-01",
+            "location": "[resourceGroup().location]",
+            "kind": "functionapp",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "resources": [
+                {
+                    "type": "Microsoft.Web/sites/config",
+                    "apiVersion": "2022-03-01",
+                    "name": "[concat(variables('azureFuncName'), '/authsettingsV2')]",
+                    "dependsOn": [ "[resourceId('Microsoft.Web/sites', variables('azureFuncName'))]" ],
+                    "kind": "string",
+                    "properties": {
+                        "globalValidation": {
+                            "requireAuthentication": true,
+                            "unauthenticatedClientAction": "RedirectToLoginPage",
+                            "redirectToProvider": "azureactivedirectory"
+                        },
+                        "identityProviders": {
+                            "azureActiveDirectory": {
+                                "enabled": true,
+                                "registration": {
+                                    "clientId": "[parameters('appId')]",
+                                    "openIdIssuer": "[concat('https://sts.windows.net/', parameters('tenantId'),'/v2.0')]"
+                                }
+                            }
+                        },
+                        "login": {
+                            "tokenStore": {
+                                "enabled": true
+                            }
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~4"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('microsoft.insights/components/', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "OpenApi__DocDescription",
+                            "value": "This Swagger UI includes the endpoint definitions for the IoTEdgeDeploymentApi."
+                        },
+                        {
+                            "name": "OpenApi__DocTitle",
+                            "value": "OpenApi Document for the IoTEdgeDeploymentApi"
+                        },
+                        {
+                            "name": "OpenApi__Auth__TenantId",
+                            "value": "[parameters('tenantId')]"
+                        },
+                        {
+                            "name": "OpenApi__Auth__Scope",
+                            "value": "[concat('https://', parameters('appId'), '.fdpo.onmicrosoft.com/user_impersonation')]"
+                        },
+                        {
+                            "name": "OpenApi__Auth__Audience",
+                            "value": "[parameters('appId')]"
+                        },
+                        {
+                            "name": "OpenApi__Version",
+                            "value": "v3"
+                        },
+                        {
+                            "name": "IOTHUB_HOSTNAME",
+                            "value": "[variables('iothubHostname')]"
+                        },
+                        {
+                            "name": "ROOT_MANIFESTS_FOLDER",
+                            "value": "[parameters('manifestsRootFolder')]"
+                        },
+                        {
+                            "name": "KEYVAULT_URI",
+                            "value": "[variables('keyVaultUri')]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2022-07-01",
+            "name": "[variables('keyVaultName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": [],
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": true,
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 90,
+                "enableRbacAuthorization": true,
+                "publicNetworkAccess": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Security/IoTSecuritySolutions",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('iotHubName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "status": "Enabled",
+                "unmaskedIpLoggingStatus": "Enabled",
+                "disabledDataSources": [],
+                "displayName": "[variables('iotHubName')]",
+                "iotHubs": [
+                    "[resourceId('Microsoft.Devices/IotHubs', variables('iotHubName'))]"
+                ],
+                "recommendationsConfiguration": []
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Devices/IotHubs', variables('iotHubName'))]"
+            ]
+        },
+        {
+            "apiVersion": "2022-04-30-preview",
+            "type": "Microsoft.Devices/IotHubs",
+            "name": "[variables('iotHubName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "eventHubEndpoints": {
+                    "events": {
+                        "retentionTimeInDays": 1,
+                        "partitionCount": 4
+                    }
+                },
+                "features": "None",
+                "enableDataResidency": false,
+                "disableLocalAuth": false
+            },
+            "sku": {
+                "name": "S1",
+                "tier": "Standard",
+                "capacity": 1
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2022-04-01",
+            "name": "[guid(resourceGroup().id, 'iotHubDataContributor')]",
+            "dependsOn": [ "[resourceId('Microsoft.Web/sites', variables('azureFuncName'))]" ],
+            "properties": {
+                "roleDefinitionId": "[variables('IoTHubDataContributor')]",
+                "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('azureFuncName')), '2019-08-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2022-04-01",
+            "name": "[guid(resourceGroup().id, 'iotHubRegistryContributor')]",
+            "dependsOn": [ "[resourceId('Microsoft.Web/sites', variables('azureFuncName'))]" ],
+            "properties": {
+                "roleDefinitionId": "[variables('IoTHubRegistryContributor')]",
+                "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('azureFuncName')), '2019-08-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2022-04-01",
+            "name": "[guid(resourceGroup().id, 'iotHubTwinContributor')]",
+            "dependsOn": [ "[resourceId('Microsoft.Web/sites', variables('azureFuncName'))]" ],
+            "properties": {
+                "roleDefinitionId": "[variables('IoTHubTwinContributor')]",
+                "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('azureFuncName')), '2019-08-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2022-04-01",
+            "name": "[guid(resourceGroup().id, 'keyVaultSecretsUser')]",
+            "dependsOn": [ "[resourceId('Microsoft.Web/sites', variables('azureFuncName'))]" ],
+            "properties": {
+                "roleDefinitionId": "[variables('KeyVaultSecretsUser')]",
+                "principalId": "[reference(resourceId('Microsoft.Web/sites', variables('azureFuncName')), '2019-08-01', 'full').identity.principalId]",
+                "principalType": "ServicePrincipal"
+            }
+        }
+    ],
+    "outputs": {
+        "iotHubHostName":  
+        {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Devices/IoTHubs', variables('iotHubName')), '2022-04-30-preview').hostName]"
+        },
+        "iotHubName":  
+        {
+            "type": "string",
+            "value": "[variables('iotHubName')]"
+        },
+        "keyVaultName": 
+        {
+            "type": "string",
+            "value": "[variables('keyVaultName')]"
+        }
+    }
+}

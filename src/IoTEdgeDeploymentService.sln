@@ -1,0 +1,72 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeploymentEngine", "IoTEdgeDeploymentEngine\IoTEdgeDeploymentEngine.csproj", "{6C475CB2-70DE-40A6-8A41-B77B0AD13E8C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeploymentTester", "IoTEdgeDeploymentTester\IoTEdgeDeploymentTester.csproj", "{BEB430F2-79D5-425D-9D2A-1D5071CB940F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEdgeDeploymentApi", "IoTEdgeDeploymentApi\IoTEdgeDeploymentApi.csproj", "{DF3E18D8-0931-43FA-9E5C-53264BAF1468}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E69BA53C-80CC-485D-B8EB-11B100F68430}"
+	ProjectSection(SolutionItems) = preProject
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
+		..\CODE_OF_CONDUCT.md = ..\CODE_OF_CONDUCT.md
+		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
+		..\SECURITY.md = ..\SECURITY.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", "{B321101D-E447-4B2E-B3D5-58B62441A8E5}"
+	ProjectSection(SolutionItems) = preProject
+		..\deployment\azuredeploy.json = ..\deployment\azuredeploy.json
+		..\deployment\azuredeploy.parameters.json = ..\deployment\azuredeploy.parameters.json
+		..\deployment\clean-dev-setup.ps1 = ..\deployment\clean-dev-setup.ps1
+		..\deployment\dev-setup.ps1 = ..\deployment\dev-setup.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "postman", "postman", "{45CA2DC0-1EAA-4158-ADA7-7828F2759970}"
+	ProjectSection(SolutionItems) = preProject
+		..\postman\IoTEdgeDeploymentService.postman_collection.json = ..\postman\IoTEdgeDeploymentService.postman_collection.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{AE409DDB-406D-4856-979B-2755860132B2}"
+	ProjectSection(SolutionItems) = preProject
+		..\images\AppRegScope.png = ..\images\AppRegScope.png
+		..\images\SPUsers.png = ..\images\SPUsers.png
+		..\images\SwaggerUI.png = ..\images\SwaggerUI.png
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTEdgeDeploymentEngineTests", "IoTEdgeDeploymentEngineTests\IoTEdgeDeploymentEngineTests.csproj", "{A73CD8A9-A5E3-42F3-8656-0047C5ECC7E1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C475CB2-70DE-40A6-8A41-B77B0AD13E8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C475CB2-70DE-40A6-8A41-B77B0AD13E8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C475CB2-70DE-40A6-8A41-B77B0AD13E8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C475CB2-70DE-40A6-8A41-B77B0AD13E8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEB430F2-79D5-425D-9D2A-1D5071CB940F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEB430F2-79D5-425D-9D2A-1D5071CB940F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEB430F2-79D5-425D-9D2A-1D5071CB940F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEB430F2-79D5-425D-9D2A-1D5071CB940F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF3E18D8-0931-43FA-9E5C-53264BAF1468}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF3E18D8-0931-43FA-9E5C-53264BAF1468}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF3E18D8-0931-43FA-9E5C-53264BAF1468}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF3E18D8-0931-43FA-9E5C-53264BAF1468}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A73CD8A9-A5E3-42F3-8656-0047C5ECC7E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A73CD8A9-A5E3-42F3-8656-0047C5ECC7E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A73CD8A9-A5E3-42F3-8656-0047C5ECC7E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A73CD8A9-A5E3-42F3-8656-0047C5ECC7E1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {661B97D8-7274-4466-8E48-8391C9355C77}
+	EndGlobalSection
+EndGlobal

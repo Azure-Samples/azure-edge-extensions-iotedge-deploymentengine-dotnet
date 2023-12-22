@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "OpenApi__DocDescription": "This Swagger UI includes the endpoint definitions for the IoTEdgeDeploymentApi.",
+    "OpenApi__DocTitle": "OpenApi Document for the IoTEdgeDeploymentApi",
+    "ROOT_MANIFESTS_FOLDER": "D:\\home\\site\\manifests",
+    "IOTHUB_HOSTNAME": "<IoTHubHostname>",
+    "KEYVAULT_URI": "<KeyVaultUri>",
+    "OpenApi__Auth__TenantId": "<Azure_Tenant_Id>",
+    "OpenApi__Auth__Scope": "<App_Registration_Scope>",
+    "OpenApi__Auth__Audience": "<App_Registration_Id>",
+    "OpenApi__Version": "v3",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+  }
+}

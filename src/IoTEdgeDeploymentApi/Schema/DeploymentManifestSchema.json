@@ -1,0 +1,504 @@
+{
+  "definitions": {
+    "Content": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "modulesContent": {
+          "$ref": "#/definitions/ModulesCtnt"
+        }
+      },
+      "required": [
+        "modulesContent"
+      ]
+    },
+    "EdgeAgent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "properties.desired": {
+          "$ref": "#/definitions/PropertiesDesiredEdgeAgent"
+        }
+      },
+      "required": [
+        "properties.desired"
+      ]
+    },
+    "EdgeHub": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "properties.desired": {
+          "$ref": "#/definitions/PropertiesDesiredEdgeHub"
+        }
+      },
+      "required": [
+        "properties.desired"
+      ]
+    },
+    "EnvSpecification": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "Labels": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "Metrics": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "results": {
+          "$ref": "#/definitions/Results1"
+        },
+        "queries": {
+          "$ref": "#/definitions/Queries1"
+        }
+      },
+      "required": [
+        "results",
+        "queries"
+      ]
+    },
+    "ModulesCtnt": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "$edgeAgent": {
+          "$ref": "#/definitions/EdgeAgent"
+        },
+        "$edgeHub": {
+          "$ref": "#/definitions/EdgeHub"
+        }
+      },
+      "required": [
+        "$edgeAgent",
+        "$edgeHub"
+      ]
+    },
+    "PropertiesDesiredEdgeAgent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "runtime": {
+          "$ref": "#/definitions/Runtime"
+        },
+        "systemModules": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/SystemModuleSpecification"
+          }
+        },
+        "modules": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/SystemModuleSpecification"
+          }
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "runtime",
+        "systemModules",
+        "modules"
+      ]
+    },
+    "PropertiesDesiredEdgeHub": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "routes": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "storeAndForwardConfiguration": {
+          "$ref": "#/definitions/StoreAndForwardConfiguration"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "routes",
+        "storeAndForwardConfiguration"
+      ]
+    },
+    "Queries": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "targetedCount": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "appliedCount": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reportedSuccessfulCount": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reportedFailedCount": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "targetedCount",
+        "appliedCount",
+        "reportedSuccessfulCount",
+        "reportedFailedCount"
+      ]
+    },
+    "Queries1": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "Results": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "targetedCount": {
+          "type": "integer"
+        },
+        "appliedCount": {
+          "type": "integer"
+        },
+        "reportedSuccessfulCount": {
+          "type": "integer"
+        },
+        "reportedFailedCount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "targetedCount",
+        "appliedCount",
+        "reportedSuccessfulCount",
+        "reportedFailedCount"
+      ]
+    },
+    "Results1": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "Runtime": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "settings": {
+          "$ref": "#/definitions/Settings"
+        }
+      },
+      "required": [
+        "type",
+        "settings"
+      ]
+    },
+    "Settings": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "minDockerVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "loggingOptions": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "registryCredentials": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/Store"
+          }
+        }
+      },
+      "required": [
+        "registryCredentials"
+      ]
+    },
+    "SettingsSpecification": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "image": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createOptions": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "image"
+      ]
+    },
+    "Store": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "password": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "username": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "address",
+        "password",
+        "username"
+      ]
+    },
+    "StoreAndForwardConfiguration": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "timeToLiveSecs": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "timeToLiveSecs"
+      ]
+    },
+    "SystemMetrics": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "results": {
+          "$ref": "#/definitions/Results"
+        },
+        "queries": {
+          "$ref": "#/definitions/Queries"
+        }
+      },
+      "required": [
+        "results",
+        "queries"
+      ]
+    },
+    "SystemModuleSpecification": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "restartPolicy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "settings": {
+          "$ref": "#/definitions/SettingsSpecification"
+        },
+        "env": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "$ref": "#/definitions/EnvSpecification"
+          }
+        },
+        "startupOrder": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "settings"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schemaVersion": {},
+    "labels": {
+      "$ref": "#/definitions/Labels"
+    },
+    "content": {
+      "$ref": "#/definitions/Content"
+    },
+    "targetCondition": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "createdTimeUtc": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lastUpdatedTimeUtc": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "priority": {
+      "type": "integer"
+    },
+    "systemMetrics": {
+      "$ref": "#/definitions/SystemMetrics"
+    },
+    "metrics": {
+      "$ref": "#/definitions/Metrics"
+    },
+    "etag": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "content",
+    "targetCondition",
+    "createdTimeUtc",
+    "priority"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+	"info": {
+		"_postman_id": "aec2539a-9292-4574-80d3-f33fab52ac48",
+		"name": "IoTEdgeDeploymentService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1802918"
+	},
+	"item": [
+		{
+			"name": "Token Request - IoTEdgeDeploymentEngine",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "client_id",
+							"value": "<clientId>",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "<clientSecret>",
+							"type": "text"
+						},
+						{
+							"key": "resource",
+							"value": "<resourceAppId>",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://login.microsoftonline.com/<tenantId>/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"login",
+						"microsoftonline",
+						"com"
+					],
+					"path": [
+						"<tenantId>",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

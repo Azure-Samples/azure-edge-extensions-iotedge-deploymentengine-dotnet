@@ -1,0 +1,96 @@
+{
+    "id": "layered4",
+    "schemaVersion": null,
+    "labels": {},
+    "content": {
+        "modulesContent": {
+            "$edgeAgent": {
+                "properties.desired.modules.SimulatedTemperatureSensor": {
+                    "env": {},
+                    "restartPolicy": "always",
+                    "settings": {
+                        "image": "mcr.microsoft.com/azureiotedge-simulated-temperature-sensor:1.0"
+                    },
+                    "status": "running",
+                    "type": "docker"
+                },
+                "properties.desired.modules.AzureBlobStorageonIoTEdge": {
+                    "env": {
+                        "LOCAL_STORAGE_ACCOUNT_NAME": {
+                            "value": "<Your local account name>"
+                        },
+                        "LOCAL_STORAGE_ACCOUNT_KEY": {
+                            "value": "<Your local account key>"
+                        }
+                    },
+                    "restartPolicy": "always",
+                    "settings": {
+                        "image": "mcr.microsoft.com/azure-blob-storage",
+                        "createOptions": "{\"HostConfig\": {\"PortBindings\": {\"11002/tcp\": [{\"HostPort\":\"11002\"}]}}}"
+                    },
+                    "status": "running",
+                    "type": "docker"
+                },
+                "properties.desired.modules.AzureSQLEdge": {
+                    "env": {
+                        "ACCEPT_EULA": {
+                            "value": "Y"
+                        },
+                        "MSSQL_SA_PASSWORD": {
+                            "value": "<Default_MSSQL_SA_Password>"
+                        },
+                        "MSSQL_LCID": {
+                            "value": "1033"
+                        },
+                        "MSSQL_COLLATION": {
+                            "value": "SQL_Latin1_General_CP1_CI_AS"
+                        }
+                    },
+                    "restartPolicy": "always",
+                    "settings": {
+                        "image": "mcr.microsoft.com/azure-sql-edge/premium",
+                        "createOptions": "{ \"HostConfig\": { \"CapAdd\": [ \"SYS_PTRACE\" ], \"Binds\": [ \"sqlvolume:/sqlvolume\" ], \"PortBindings\": { \"1433/tcp\": [ { \"HostPort\": \"1433\" } ] }, \"Mounts\": [ { \"Type\": \"volume\", \"Source\": \"sqlvolume\", \"Target\": \"/var/opt/mssql\" } ] }, \"Env\": [ \"MSSQL_AGENT_ENABLED=TRUE\", \"ClientTransportType=AMQP_TCP_Only\", \"PlanId=asde-premium-on-iot-edge\" ] }"
+                    },
+                    "status": "running",
+                    "type": "docker"
+                }
+            },
+            "SimulatedTemperatureSensor": {
+                "properties.desired": {
+                    "SendData": true,
+                    "SendInterval": 5
+                }
+            },
+            "AzureBlobStorageonIoTEdge": {},
+            "AzureSQLEdge": {},
+            "$edgeHub": {
+                "properties.desired.routes.SimulatedTemperatureSensorToIoTHub": {
+                    "route": "FROM /messages/modules/SimulatedTemperatureSensor/* INTO $upstream"
+                }
+            }
+        }
+    },
+    "targetCondition": "tags.env='device100' or tags.env='device200'",
+    "createdTimeUtc": "2022-12-13T12:20:01.8214725Z",
+    "lastUpdatedTimeUtc": "2022-12-13T12:20:01.8214725Z",
+    "priority": 4,
+    "systemMetrics": {
+        "results": {
+            "targetedCount": 0,
+            "appliedCount": 0,
+            "reportedSuccessfulCount": 0,
+            "reportedFailedCount": 0
+        },
+        "queries": {
+            "targetedCount": "select deviceId from devices where capabilities.iotEdge = true and tags.env='device100' or tags.env='device200'",
+            "appliedCount": "select deviceId from devices.modules where moduleId = '$edgeAgent' and configurations.[[layered4]].status = 'Applied'",
+            "reportedSuccessfulCount": "select deviceId from devices.modules where moduleId = '$edgeAgent' and configurations.[[layered4]].status = 'Applied' and properties.desired.$version = properties.reported.lastDesiredVersion and properties.reported.lastDesiredStatus.code = 200",
+            "reportedFailedCount": "select deviceId from devices.modules where moduleId = '$edgeAgent' and configurations.[[layered4]].status = 'Applied' and properties.desired.$version = properties.reported.lastDesiredVersion and properties.reported.lastDesiredStatus.code != 200"
+        }
+    },
+    "metrics": {
+        "results": {},
+        "queries": {}
+    },
+    "etag": "MQ=="
+}

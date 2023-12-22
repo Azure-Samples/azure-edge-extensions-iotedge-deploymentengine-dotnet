@@ -1,0 +1,42 @@
+name: Azure ARM
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      #- uses: actions/checkout@main
+      # Log into Azure
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+        # Deploy ARM template
+      - name: Run ARM deploy
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          scope: resourcegroup
+          resourceGroupName: ${{ secrets.AZURE_RG }}
+          template: ./deployment/azuredeploy.json
+          parameters: ./deployment/azuredeploy.parameters.json resourceName=${{ secrets.RESOURCE_NAME }} tenantId=${{ secrets.TENANT_ID }} appId=${{ secrets.APP_ID }}
+      - name: "Resolve Project Dependencies Using Dotnet"
+        shell: bash
+        run: |
+          pushd './src/.'
+          dotnet build --configuration Release --output ./output
+          popd
+      - name: "Run Azure Functions action"
+        uses: Azure/functions-action@v1
+        with:
+          app-name: func-${{ secrets.RESOURCE_NAME }}
+          package: "./src/output"
